@@ -1,22 +1,43 @@
 const router = require('express').Router();
 const { Product, Category, Tag, ProductTag } = require('../../models');
 
-// The `/api/products` endpoint
-
-// get all products
-router.get('/', (req, res) => {
-  // find all products
-  // be sure to include its associated Category and Tag data
+// get all products and be sure to include its associated Category and Tag data
+router.get('/products', (req, res) => { // The `/api/products` endpoint
+  Product.findAll({
+    include: [Category],
+    include: [Tag]
+  })
+    .then(dbProductData => res.json(dbProductData))
+    .catch(err => {
+      console.log(err);
+      res.status(500).json(err);
+    })
 });
 
-// get one product
-router.get('/:id', (req, res) => {
-  // find a single product by its `id`
-  // be sure to include its associated Category and Tag data
+// get one product and be sure to include its associated Category and Tag data
+router.get('/products/:id', (req, res) => {
+  Product.findOne({
+    include: [Category],
+    include: [Tag],
+    where: {
+      id: req.params.id
+    }
+  })
+    .then(dbProductData => {
+      if (!dbProductData) {
+        res.status(404).json({ message: 'Product not found with this id!' });
+        return;
+      }
+      res.json(dbProductData);
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json(err);
+    })
 });
 
-// create new product
-router.post('/', (req, res) => {
+// create new product (this looked like it was done.... review further....)
+router.post('products/', (req, res) => {
   /* req.body should look like this...
     {
       product_name: "Basketball",
@@ -47,8 +68,8 @@ router.post('/', (req, res) => {
     });
 });
 
-// update product
-router.put('/:id', (req, res) => {
+// update product (this looked like it was done.... review further....)
+router.put('products/:id', (req, res) => {
   // update product data
   Product.update(req.body, {
     where: {
@@ -89,8 +110,24 @@ router.put('/:id', (req, res) => {
     });
 });
 
-router.delete('/:id', (req, res) => {
-  // delete one product by its `id` value
+// delete one product by its `id` value
+router.delete('products/:id', (req, res) => {
+  Product.destroy({
+    where: {
+      id: req.params.id
+    }
+  })
+    .then(dbProductData => {
+      if (!dbProductData) {
+        res.status(404).json({ message: 'No Product found with this id!' });
+        return;
+      }
+      res.json(dbProductData);
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json(err);
+    });
 });
 
 module.exports = router;
