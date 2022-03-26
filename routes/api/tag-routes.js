@@ -2,7 +2,7 @@ const router = require('express').Router();
 const { Tag, Product, ProductTag } = require('../../models');
 
 // find all tags and be sure to include its associated Product data
-router.get('/tags', (req, res) => { // The `/api/tags` endpoint
+router.get('/', (req, res) => { // The `/api/tags` endpoint
   Tag.findAll({
     include: [Product]
   })
@@ -14,7 +14,7 @@ router.get('/tags', (req, res) => { // The `/api/tags` endpoint
 });
 
 // find a single tag by its `id` and be sure to include its associated Product data
-router.get('tags/:id', (req, res) => {
+router.get('/:id', (req, res) => {
   Tag.findOne({
     include: [Product],
     where: {
@@ -35,11 +35,11 @@ router.get('tags/:id', (req, res) => {
 });
 
 // create a new tag
-router.post('tags/', (req, res) => {
+router.post('/', (req, res) => {
   Tag.create({
-    tag_name: req.body.category
+    tag_name: req.body.tag_name
   })
-    .then(dbTagData => { dbTagData })
+    .then((dbTagData) => res.json(dbTagData))
     .catch(err => {
       console.log(err);
       res.status(500).json(err);
@@ -47,7 +47,7 @@ router.post('tags/', (req, res) => {
 });
 
 // update a tag's name by its `id` value
-router.put('tags/:id', (req, res) => {
+router.put('/:id', (req, res) => {
   Tag.update(req.body, {
     where: {
       id: req.params.id
@@ -66,7 +66,7 @@ router.put('tags/:id', (req, res) => {
 });
 
 // delete on tag by its `id` value
-router.delete('tags/:id', (req, res) => {
+router.delete('/:id', (req, res) => {
   Tag.destroy({
     where: {
       id: req.params.id

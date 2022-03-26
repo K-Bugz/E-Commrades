@@ -1,7 +1,7 @@
 const express = require('express');
 const routes = require('./routes');
 const sequelize = require('./config/connection');
-require('dotenv').config();
+
 
 // Express middleware
 const app = express();
@@ -11,9 +11,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Use apiRoutes
-app.use('/api', apiRoutes);
+app.use(routes);
 
 // sync sequelize models to the database, then turn on the server
-app.listen(PORT, () => {
-  console.log(`App listening on port ${PORT}!`);
+sequelize.sync({ force: false }).then(() => {
+  app.listen(PORT, () => console.log('Now listening'));
 });
